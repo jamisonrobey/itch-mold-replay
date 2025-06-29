@@ -6,7 +6,7 @@ include(FetchContent)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+#set(CMAKE_CXX_EXTENSIONS OFF)
 
 file(GLOB_RECURSE SRCS src/*.cpp)
 add_executable(itch_mold_replay ${SRCS})
@@ -23,11 +23,12 @@ FetchContent_Declare(
         GIT_TAG v2.5.0
 )
 
+set(CLI11_PRECOMPILED ON CACHE BOOL "Precompile CLI11")
+
 FetchContent_MakeAvailable(cli11_proj)
 
-
 target_link_libraries(itch_mold_replay PRIVATE
-		CLI11
+		CLI11::CLI11
 		jamutils)
 
 
