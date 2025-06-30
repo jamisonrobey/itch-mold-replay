@@ -1,4 +1,8 @@
 #include <CLI/App.hpp>
+
+#include <filesystem>
+#include <string>
+#include <cstdint>
 #include <print>
 
 #include "downstream_server.h"
