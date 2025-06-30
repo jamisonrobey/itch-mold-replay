@@ -69,13 +69,14 @@ void Downstream_Server::start() const
 
     while (file_pos < mapped_file_.len())
     {
+        // reset header
         header.msg_count = 0;
         header.sequence_num = htobe64(mold_seq_num);
         dgram_pos = mold_udp_64::downstream_header_size;
 
         std::uint64_t dgram_first_timestamp{0};
 
-        while (file_pos < mapped_file_.len())
+        while (file_pos < mapped_file_.len()) // fill dgram
         {
             if (file_pos + itch::len_prefix_size > mapped_file_.len())
             {
@@ -96,19 +97,19 @@ void Downstream_Server::start() const
 
             if (dgram_pos + total_msg_size > mold_udp_64::dgram_max_size)
             {
-                break;
+                break; // dgram full so message goes in the next
             }
 
             if (header.msg_count == 0)
             {
                 dgram_first_timestamp = itch::extract_timestamp(&mapped_file_.addr<std::byte>()[file_pos]);
-
             }
 
             std::memcpy(&dgram[dgram_pos],
                         &mapped_file_.addr<std::byte>()[file_pos],
                         total_msg_size);
 
+            // increment
             dgram_pos += total_msg_size;
             file_pos += total_msg_size;
             ++header.msg_count;
@@ -121,6 +122,7 @@ void Downstream_Server::start() const
                 "singular itch msg too big to fit into datagram; logic error or file issue");
         }
 
+        // finalize header before send
         header.msg_count = htons(header.msg_count);
         std::memcpy(dgram.data(), &header, mold_udp_64::downstream_header_size);
 
@@ -129,7 +131,7 @@ void Downstream_Server::start() const
         if (dgram_time < start_time_)
             continue;
 
-        if (first_timestamp == 0)
+        if (first_timestamp == 0) // after start_time_ grab absolute time point
         {
             first_timestamp = dgram_first_timestamp;
             replay_start = std::chrono::steady_clock::now();
