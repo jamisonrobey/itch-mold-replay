@@ -13,20 +13,29 @@
 #include <fstream>
 #include <print>
 
-Downstream_Server::Downstream_Server(const std::filesystem::path &itch_file, const std::string &group,
-                                     const std::uint16_t port, const std::uint8_t ttl, bool loopback,
+Downstream_Server::Downstream_Server(const std::filesystem::path &itch_file,
+                                     const std::string &group,
+                                     const std::uint16_t port,
+                                     const std::uint8_t ttl,
+                                     const bool loopback,
+                                     const nasdaq::Market_Phase start_phase,
                                      const double replay_speed) : sock_{socket(AF_INET, SOCK_DGRAM, 0)},
                                                                   mapped_file_{
                                                                       std::filesystem::file_size(itch_file), PROT_READ,
                                                                       MAP_PRIVATE, jam_utils::FD{itch_file}, 0},
+                                                                  start_time_{
+                                                                      nasdaq::market_phase_to_timestamp(start_phase)},
                                                                   replay_speed_{replay_speed}
 {
     addr_.sin_family = AF_INET;
     addr_.sin_port = htons(port);
 
-    if (const auto ret{inet_pton(AF_INET, group.c_str(), &addr_.sin_addr)}; ret == 0)
+    if (const auto ret{inet_pton(AF_INET, group.c_str(), &addr_.sin_addr)};
+        ret == 0)
     {
-        throw std::invalid_argument(std::format("invalid ip format for downstream group {}", group));
+        throw std::invalid_argument(std::format(
+            "invalid ip format for downstream group {}",
+            group));
     }
     else if (ret < 0)
     {
@@ -39,12 +48,20 @@ Downstream_Server::Downstream_Server(const std::filesystem::path &itch_file, con
         throw std::system_error(errno, std::system_category());
     }
 
-    if (setsockopt(sock_.fd(), IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0)
+    if (setsockopt(sock_.fd(),
+                   IPPROTO_IP,
+                   IP_MULTICAST_TTL,
+                   &ttl,
+                   sizeof(ttl)) < 0)
     {
         throw std::system_error(errno, std::system_category());
     }
 
-    if (setsockopt(sock_.fd(), IPPROTO_IP, IP_MULTICAST_LOOP, &loopback, sizeof(loopback)) < 0)
+    if (setsockopt(sock_.fd(),
+                   IPPROTO_IP,
+                   IP_MULTICAST_LOOP,
+                   &loopback,
+                   sizeof(loopback)) < 0)
     {
         throw std::system_error(errno, std::system_category());
     }
@@ -58,10 +75,10 @@ void Downstream_Server::start() const
     std::array<std::byte, mold_udp_64::dgram_max_size> dgram{};
     std::size_t dgram_pos{0};
 
-    std::size_t file_pos{0};
-
-    const auto replay_start = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point replay_start;
     std::uint64_t first_timestamp{0};
+
+    std::size_t file_pos{0};
 
     while (file_pos < mapped_file_.len())
     {
@@ -79,14 +96,17 @@ void Downstream_Server::start() const
             }
 
             itch::len_prefix_t msg_len;
-            std::memcpy(&msg_len, &mapped_file_.addr<std::byte>()[file_pos], itch::len_prefix_size);
+            std::memcpy(&msg_len,
+                        &mapped_file_.addr<std::byte>()[file_pos],
+                        itch::len_prefix_size);
             msg_len = ntohs(msg_len);
 
             const std::size_t total_msg_size{itch::len_prefix_size + msg_len};
 
             if (file_pos + msg_len > mapped_file_.len())
             {
-                throw std::runtime_error("ITCH message has length prefix which exceeds file size");
+                throw std::runtime_error(
+                    "ITCH message has length prefix which exceeds file size");
             }
 
             if (dgram_pos + total_msg_size > mold_udp_64::dgram_max_size)
@@ -96,19 +116,13 @@ void Downstream_Server::start() const
 
             if (header.msg_count == 0)
             {
-                std::memcpy(reinterpret_cast<std::byte *>(&dgram_first_timestamp) + 2,
-                            &mapped_file_.addr<std::byte>()[file_pos] + itch::timestamp_offset,
-                            itch::timestamp_size);
+                dgram_first_timestamp = itch::extract_timestamp(&mapped_file_.addr<std::byte>()[file_pos]);
 
-                dgram_first_timestamp = be64toh(dgram_first_timestamp);
-
-                if (!first_timestamp)
-                {
-                    first_timestamp = dgram_first_timestamp;
-                }
             }
 
-            std::memcpy(&dgram[dgram_pos], &mapped_file_.addr<std::byte>()[file_pos], total_msg_size);
+            std::memcpy(&dgram[dgram_pos],
+                        &mapped_file_.addr<std::byte>()[file_pos],
+                        total_msg_size);
 
             // increment
             dgram_pos += total_msg_size;
@@ -126,27 +140,39 @@ void Downstream_Server::start() const
         header.msg_count = htons(header.msg_count);
         std::memcpy(dgram.data(), &header, mold_udp_64::downstream_header_size);
 
-        if (dgram_first_timestamp > first_timestamp)
-        {
-            const auto delay_ns = static_cast<std::uint64_t>(
-                static_cast<double>(dgram_first_timestamp - first_timestamp) / replay_speed_
-            );
 
-            const auto target_time = replay_start + std::chrono::nanoseconds(delay_ns);
-            std::this_thread::sleep_until(target_time);
+
+        const auto dgram_time{std::chrono::nanoseconds(dgram_first_timestamp)};
+
+        if (dgram_time < start_time_)
+            continue;
+
+        if (first_timestamp == 0)
+        {
+            first_timestamp = dgram_first_timestamp;
+            replay_start = std::chrono::steady_clock::now();
         }
 
-        const ssize_t bytes_sent{sendto(sock_.fd(), dgram.data(), dgram_pos, 0,
-                                        reinterpret_cast<const sockaddr *>(&addr_), sizeof(addr_))};
+        const auto first_time{std::chrono::nanoseconds(first_timestamp)};
+        const std::chrono::nanoseconds elapsed{dgram_time - first_time};
+        const std::chrono::nanoseconds delay{static_cast<std::uint64_t>(static_cast<double>(elapsed.count()) / replay_speed_)};
+
+        const auto target{replay_start + delay};
+
+        std::this_thread::sleep_until(target);
+
+        const ssize_t bytes_sent{
+            sendto(sock_.fd(),
+                   dgram.data(),
+                   dgram_pos,
+                   0,
+                   reinterpret_cast<const sockaddr *>(&addr_),
+                   sizeof(addr_))
+        };
 
         if (bytes_sent < 0)
-        {
             std::println(std::cerr, "sendto failed: {}", strerror(errno));
-        }
         else if (bytes_sent != static_cast<ssize_t>(dgram_pos))
-        {
             std::println(std::cerr, "sendto sent only {} of {} bytes", bytes_sent, dgram_pos);
-        }
-
     }
 }
