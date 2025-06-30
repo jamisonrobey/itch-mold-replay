@@ -25,52 +25,33 @@ Downstream_Server::Downstream_Server(const std::filesystem::path &itch_file,
                                      const std::uint8_t ttl,
                                      const bool loopback,
                                      const nasdaq::Market_Phase start_phase,
-                                     const double replay_speed) : sock_{socket(AF_INET, SOCK_DGRAM, 0)},
-                                                                  mapped_file_{
-                                                                      std::filesystem::file_size(itch_file), PROT_READ,
-                                                                      MAP_PRIVATE, jam_utils::FD{itch_file}, 0},
-                                                                  start_time_{
-                                                                      nasdaq::market_phase_to_timestamp(start_phase)},
-                                                                  replay_speed_{replay_speed}
+                                     const double replay_speed)
+    : sock_{socket(AF_INET, SOCK_DGRAM, 0)},
+      mapped_file_{
+          std::filesystem::file_size(itch_file), PROT_READ,
+          MAP_PRIVATE, jam_utils::FD{itch_file}, 0},
+      start_time_{
+          nasdaq::market_phase_to_timestamp(start_phase)},
+      replay_speed_{replay_speed}
 {
     addr_.sin_family = AF_INET;
     addr_.sin_port = htons(port);
 
-    if (const auto ret{inet_pton(AF_INET, group.c_str(), &addr_.sin_addr)};
-        ret == 0)
-    {
-        throw std::invalid_argument(std::format(
-            "invalid ip format for downstream group {}",
-            group));
-    }
+    if (const auto ret{inet_pton(AF_INET, group.c_str(), &addr_.sin_addr)}; ret == 0)
+        throw std::invalid_argument(std::format("invalid ip format for downstream group {}", group));
+
     else if (ret < 0)
-    {
         throw std::system_error(errno, std::system_category());
-    }
 
     constexpr int opt{1};
     if (setsockopt(sock_.fd(), SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
-    {
         throw std::system_error(errno, std::system_category());
-    }
 
-    if (setsockopt(sock_.fd(),
-                   IPPROTO_IP,
-                   IP_MULTICAST_TTL,
-                   &ttl,
-                   sizeof(ttl)) < 0)
-    {
+    if (setsockopt(sock_.fd(),IPPROTO_IP,IP_MULTICAST_TTL, &ttl, sizeof(ttl)) < 0)
         throw std::system_error(errno, std::system_category());
-    }
 
-    if (setsockopt(sock_.fd(),
-                   IPPROTO_IP,
-                   IP_MULTICAST_LOOP,
-                   &loopback,
-                   sizeof(loopback)) < 0)
-    {
+    if (setsockopt(sock_.fd(),IPPROTO_IP,IP_MULTICAST_LOOP, &loopback, sizeof(loopback)) < 0)
         throw std::system_error(errno, std::system_category());
-    }
 }
 
 void Downstream_Server::start() const
@@ -102,9 +83,7 @@ void Downstream_Server::start() const
             }
 
             itch::len_prefix_t msg_len;
-            std::memcpy(&msg_len,
-                        &mapped_file_.addr<std::byte>()[file_pos],
-                        itch::len_prefix_size);
+            std::memcpy(&msg_len, &mapped_file_.addr<std::byte>()[file_pos], itch::len_prefix_size);
             msg_len = ntohs(msg_len);
 
             const std::size_t total_msg_size{itch::len_prefix_size + msg_len};
@@ -130,7 +109,6 @@ void Downstream_Server::start() const
                         &mapped_file_.addr<std::byte>()[file_pos],
                         total_msg_size);
 
-            // increment
             dgram_pos += total_msg_size;
             file_pos += total_msg_size;
             ++header.msg_count;
@@ -145,8 +123,6 @@ void Downstream_Server::start() const
 
         header.msg_count = htons(header.msg_count);
         std::memcpy(dgram.data(), &header, mold_udp_64::downstream_header_size);
-
-
 
         const auto dgram_time{std::chrono::nanoseconds(dgram_first_timestamp)};
 
@@ -167,14 +143,12 @@ void Downstream_Server::start() const
 
         std::this_thread::sleep_until(target);
 
-        const ssize_t bytes_sent{
-            sendto(sock_.fd(),
-                   dgram.data(),
-                   dgram_pos,
-                   0,
-                   reinterpret_cast<const sockaddr *>(&addr_),
-                   sizeof(addr_))
-        };
+        const ssize_t bytes_sent{sendto(sock_.fd(),
+                                        dgram.data(),
+                                        dgram_pos,
+                                        0,
+                                        reinterpret_cast<const sockaddr *>(&addr_),
+                                        sizeof(addr_))};
 
         if (bytes_sent < 0)
             std::println(std::cerr, "sendto failed: {}", strerror(errno));
