@@ -1,12 +1,22 @@
-BasedOnStyle: Microsoft
-ColumnLimit: 0
-SortIncludes: Never
-BreakBeforeBinaryOperators: NonAssignment
-BinPackArguments: false
+BasedOnStyle: Google
+IndentWidth: 2
+
+BreakBeforeBraces: Attach
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+AllowAllConstructorInitializersOnNextLine: false
+
 BinPackParameters: false
-IndentCaseBlocks: true
-MaxEmptyLinesToKeep: 3
-BraceWrapping:
-  AfterNamespace: false
-  AfterCaseLabel: true
-  BeforeLambdaBody: true
+BinPackArguments: false
+
+ColumnLimit: 100
+
+AlignAfterOpenBracket: Align
+
+SortIncludes: Never
+
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Never
+
+SpacesInContainerLiterals: false
+SpaceBeforeParens: ControlStatements
+

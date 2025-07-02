@@ -9,20 +9,20 @@
 
 class Downstream_Server {
 public:
-  Downstream_Server(const std::filesystem::path& itch_file,
-                    const std::string& group,
+  Downstream_Server(std::shared_ptr<jam_utils::M_Map> mapped_file,
+                    std::string_view group,
                     std::uint16_t port,
                     std::uint8_t ttl,
                     bool loopback,
-                    nasdaq::Market_Phase start_phase,
-                    double replay_speed);
+                    double replay_speed,
+                    nasdaq::Market_Phase start_phase);
 
   void start() const;
 
 private:
   jam_utils::FD sock_;
   sockaddr_in addr_{};
-  jam_utils::M_Map mapped_file_;
-  std::chrono::nanoseconds start_time_{};
+  std::shared_ptr<jam_utils::M_Map> mapped_file_;
   double replay_speed_{};
+  std::chrono::nanoseconds start_time_{};
 };
