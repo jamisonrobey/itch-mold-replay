@@ -7,7 +7,7 @@ Replay NASDAQ ITCH binary files over MoldUDP64.
 ## Requirements
 
 - Linux
-- `g++` >= 13
+- `g++` >= 14
 - `cmake` >= 3.20
 
 ## Build
