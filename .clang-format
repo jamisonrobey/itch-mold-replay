@@ -1,22 +1,6 @@
-BasedOnStyle: Google
-IndentWidth: 2
-
-BreakBeforeBraces: Attach
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
-AllowAllConstructorInitializersOnNextLine: false
-
-BinPackParameters: false
-BinPackArguments: false
-
-ColumnLimit: 100
-
-AlignAfterOpenBracket: Align
-
-SortIncludes: Never
-
-AllowShortFunctionsOnASingleLine: Empty
-AllowShortBlocksOnASingleLine: Never
-
-SpacesInContainerLiterals: false
-SpaceBeforeParens: ControlStatements
-
+BasedOnStyle: Microsoft
+DerivePointerAlignment: false
+PointerAlignment: Left
+BreakBeforeBraces: Custom
+AllowShortFunctionsOnASingleLine: "All"
+AllowShortLoopsOnASingleLine: true
