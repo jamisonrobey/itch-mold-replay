@@ -23,7 +23,7 @@ public:
 
     void start()
     {
-        for (unsigned int i = 0; i < num_threads_; ++i)
+        for (std::size_t i = 0; i < num_threads_; ++i)
         {
             worker_threads_.emplace_back([this] {
                 Retransmission_Worker<BufferSize, MaxEpollEvents> worker{
@@ -43,8 +43,8 @@ public:
     }
 
 private:
-    std::string session_;
-    std::string address_;
+    std::string_view session_;
+    std::string_view address_;
     std::uint16_t port_;
     std::shared_ptr<jam_utils::M_Map> mapped_file_;
     Message_Buffer<BufferSize>& msg_buf_;
