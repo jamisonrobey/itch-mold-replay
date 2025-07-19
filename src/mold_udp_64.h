@@ -21,23 +21,20 @@ struct __attribute__((__packed__)) Downstream_Header
     std::uint64_t sequence_num{};
     std::uint16_t msg_count{};
 
+    Downstream_Header() = default;
     explicit Downstream_Header(const std::string_view session_)
     {
-        if (session_.length() != session_string_size)
+        if (session_.size() != session_string_size)
         {
             throw std::invalid_argument("mold session must be exactly 10 bytes (excluding null terminator)");
         }
-        std::memcpy(this->session, session_.data(), sizeof(this->session));
-        ;
+        std::memcpy(this->session, session_.data(), session_string_size);
     }
 };
-
 constexpr std::size_t downstream_header_size{sizeof(Downstream_Header)};
 
-constexpr std::size_t request_size{20};
-constexpr std::size_t request_session_offset{0};
-constexpr std::size_t request_seq_num_offset{session_string_size};
-constexpr std::size_t request_msg_count_offset{request_seq_num_offset + sizeof(std::uint64_t)};
+using Retransmission_Request = Downstream_Header; // these are actually the same
+constexpr std::size_t retransmission_request_size{sizeof(Retransmission_Request)};
 
 constexpr std::uint16_t end_of_session_flag{0xFFF};
 constexpr std::size_t end_of_session_time_sec{30};

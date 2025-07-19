@@ -62,11 +62,11 @@ class Downstream_Server
         while (file_pos_ < file_len_)
         {
             fill_feed_buffer();
-            if (replay_ctx_.packet_timestamp < replay_ctx_.skip_before)
+            if (replay_ctx_.current_timestamp < replay_ctx_.skip_before)
             {
                 continue;
             }
-            handle_replay();
+            handle_replay_timing();
             send_feed_buffer();
         }
         end_of_session();
@@ -103,7 +103,7 @@ class Downstream_Server
 
             if (header_.msg_count == 0)
             {
-                replay_ctx_.packet_timestamp =
+                replay_ctx_.current_timestamp =
                     std::chrono::nanoseconds{itch::extract_timestamp(&mapped_file_->addr<std::byte>()[file_pos_])};
             }
 
@@ -139,18 +139,18 @@ class Downstream_Server
 #endif
     }
 
-    void handle_replay()
+    void handle_replay_timing()
     {
         if (!replay_ctx_.first_timestamp.count())
         {
-            replay_ctx_.start = std::chrono::high_resolution_clock::now();
-            replay_ctx_.first_timestamp = replay_ctx_.packet_timestamp;
+            replay_ctx_.start_time = std::chrono::high_resolution_clock::now();
+            replay_ctx_.first_timestamp = replay_ctx_.current_timestamp;
         }
-        const auto since_last_send{replay_ctx_.packet_timestamp - replay_ctx_.first_timestamp};
+        const auto since_last_send{replay_ctx_.current_timestamp - replay_ctx_.first_timestamp};
         const auto delay = std::chrono::duration_cast<std::chrono::nanoseconds>(
             std::chrono::duration<double>(since_last_send) / replay_ctx_.speed);
 #ifndef DEBUG_NO_SLEEP
-        std::this_thread::sleep_until(replay_ctx_.start + delay);
+        std::this_thread::sleep_until(replay_ctx_.start_time + delay);
 #endif
     }
 
