@@ -1,6 +1,10 @@
 BasedOnStyle: Microsoft
+SortIncludes: Never
+ColumnLimit: 0
 DerivePointerAlignment: false
 PointerAlignment: Left
-BreakBeforeBraces: Custom
-AllowShortFunctionsOnASingleLine: "All"
+AllowShortFunctionsOnASingleLine: All
 AllowShortLoopsOnASingleLine: true
+BinPackParameters: false
+BinPackArguments: false
+AllowAllParametersOfDeclarationOnNextLine: true
