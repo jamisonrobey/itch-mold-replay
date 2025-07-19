@@ -15,7 +15,7 @@
 template <std::size_t BufferSize = 65336, std::size_t MaxEpollEvents = 1024>
 class Server
 {
-public:
+  public:
     Server(const std::string_view session,
            const std::filesystem::path& itch_file,
            const std::string_view downstream_group,
@@ -26,14 +26,23 @@ public:
            std::uint16_t request_port,
            const double replay_speed,
            const nasdaq::Market_Phase start_phase)
-        : mapped_file_{
-              std::make_shared<jam_utils::M_Map>(
-                  std::filesystem::file_size(itch_file), PROT_READ, MAP_PRIVATE | MAP_POPULATE,
-                  jam_utils::FD{itch_file}, 0)},
+        : mapped_file_{std::make_shared<jam_utils::M_Map>(std::filesystem::file_size(itch_file),
+                                                          PROT_READ,
+                                                          MAP_PRIVATE | MAP_POPULATE,
+                                                          jam_utils::FD{itch_file},
+                                                          0)},
           request_server_{session, request_address, request_port, mapped_file_, msg_buf_},
-          downstream_server_{session, downstream_group, downstream_port, downstream_ttl, loopback, replay_speed,
+          downstream_server_{session,
+                             downstream_group,
+                             downstream_port,
+                             downstream_ttl,
+                             loopback,
+                             replay_speed,
                              start_phase,
-                             mapped_file_, msg_buf_} {}
+                             mapped_file_,
+                             msg_buf_}
+    {
+    }
 
     void start()
     {
@@ -43,7 +52,7 @@ public:
         request_server_.stop();
     }
 
-private:
+  private:
     std::shared_ptr<jam_utils::M_Map> mapped_file_;
 
     Message_Buffer<BufferSize> msg_buf_{};
