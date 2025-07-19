@@ -44,6 +44,7 @@ class Downstream_Server
         {
             throw std::system_error(errno, std::system_category());
         }
+
         addr_.sin_family = AF_INET;
         addr_.sin_port = htons(port);
         if (const auto ret{inet_pton(AF_INET, group.data(), &addr_.sin_addr)}; ret == 0)
@@ -60,23 +61,23 @@ class Downstream_Server
     {
         while (file_pos_ < file_len_)
         {
-            build_packet();
+            fill_feed_buffer();
             if (replay_ctx_.packet_timestamp < replay_ctx_.skip_before)
             {
                 continue;
             }
-            pace_replay();
-            send_packet();
+            handle_replay();
+            send_feed_buffer();
         }
         end_of_session();
     }
 
   private:
-    void build_packet()
+    void fill_feed_buffer()
     {
         header_.msg_count = 0;
         header_.sequence_num = htobe64(mold_seq_num_);
-        packet_size_ = mold_udp_64::downstream_header_size;
+        feed_buff_size_ = mold_udp_64::downstream_header_size;
 
         while (file_pos_ < file_len_)
         {
@@ -95,7 +96,7 @@ class Downstream_Server
             {
                 throw std::runtime_error("ITCH message length exceeds file size");
             }
-            if (packet_size_ + total_msg_size > mold_udp_64::packet_max_size)
+            if (feed_buff_size_ + total_msg_size > mold_udp_64::packet_max_size)
             {
                 break; // done
             }
@@ -106,39 +107,39 @@ class Downstream_Server
                     std::chrono::nanoseconds{itch::extract_timestamp(&mapped_file_->addr<std::byte>()[file_pos_])};
             }
 
-            std::memcpy(&packet_[packet_size_], &mapped_file_->addr<std::byte>()[file_pos_], total_msg_size);
+            std::memcpy(&feed_buff_[feed_buff_size_], &mapped_file_->addr<std::byte>()[file_pos_], total_msg_size);
             msg_buf_.push(mold_seq_num_, file_pos_);
 
-            packet_size_ += total_msg_size;
+            feed_buff_size_ += total_msg_size;
             file_pos_ += total_msg_size;
             ++header_.msg_count;
             ++mold_seq_num_;
         }
     }
 
-    void send_packet()
+    void send_feed_buffer()
     {
         header_.msg_count = htons(header_.msg_count);
-        std::memcpy(packet_.data(), &header_, mold_udp_64::downstream_header_size);
+        std::memcpy(feed_buff_.data(), &header_, mold_udp_64::downstream_header_size);
 #ifndef DEBUG_NO_NETWORK
         if (const ssize_t bytes_sent{sendto(sock_.fd(),
-                                            packet_.data(),
-                                            packet_size_,
+                                            feed_buff_.data(),
+                                            feed_buff_size_,
                                             0,
                                             reinterpret_cast<const sockaddr*>(&addr_),
                                             sizeof(addr_))};
             bytes_sent < 0)
         {
-            std::println(std::cerr, "downstream sendto failed {}", strerror(errno));
+            std::println(std::cerr, "downstream sendto failed {}", std::strerror(errno));
         }
-        else if (bytes_sent != static_cast<ssize_t>(packet_size_))
+        else if (bytes_sent != static_cast<ssize_t>(feed_buff_size_))
         {
-            std::println(std::cerr, "downstream sendto sent only {} of {} bytes", bytes_sent, packet_size_);
+            std::println(std::cerr, "downstream sendto sent only {} of {} bytes", bytes_sent, feed_buff_size_);
         }
 #endif
     }
 
-    void pace_replay()
+    void handle_replay()
     {
         if (!replay_ctx_.first_timestamp.count())
         {
@@ -175,7 +176,7 @@ class Downstream_Server
                                                 sizeof(addr_))};
                 bytes_sent < 0)
             {
-                std::println(std::cerr, "end of session sendto failed {}", strerror(errno));
+                std::println(std::cerr, "end of session sendto failed {}", std::strerror(errno));
             }
         }
 #endif
@@ -187,17 +188,17 @@ class Downstream_Server
     {
         double speed{};
         std::chrono::nanoseconds skip_before{};
-        std::chrono::high_resolution_clock::time_point start;
+        std::chrono::high_resolution_clock::time_point start_time;
         std::chrono::nanoseconds first_timestamp{};
-        std::chrono::nanoseconds packet_timestamp{};
+        std::chrono::nanoseconds current_timestamp{};
     };
     Replay_Context replay_ctx_{};
 
     jam_utils::FD sock_;
     sockaddr_in addr_{};
 
-    std::array<std::byte, mold_udp_64::packet_max_size> packet_{};
-    std::size_t packet_size_{};
+    std::array<std::byte, mold_udp_64::packet_max_size> feed_buff_{};
+    std::size_t feed_buff_size_{};
 
     mold_udp_64::Downstream_Header header_;
     std::uint64_t mold_seq_num_{1};
