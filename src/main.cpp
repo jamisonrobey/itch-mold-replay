@@ -74,19 +74,20 @@ int main(const int argc, char** argv)
 
     try
     {
-        Server server{
-            session,
-            itch_file,
-            downstream_group,
-            static_cast<std::uint16_t>(downstream_port),
-            static_cast<std::uint8_t>(downstream_ttl),
-            loopback,
-            retrans_address,
-            static_cast<std::uint16_t>(retrans_port),
-            replay_speed,
-            start_phase};
 
-        server.start();
+
+       const auto server{std::make_unique<Server<>>(session,
+                                                     itch_file,
+                                                     downstream_group,
+                                                     static_cast<std::uint16_t>(downstream_port),
+                                                     static_cast<std::uint8_t>(downstream_ttl),
+                                                     loopback,
+                                                     retrans_address,
+                                                     static_cast<std::uint16_t>(retrans_port),
+                                                     replay_speed,
+                                                     start_phase)};
+
+        server->start();
         return 0;
     }
     catch (const std::exception& ex)

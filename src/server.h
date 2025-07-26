@@ -9,10 +9,10 @@
 #include "nasdaq.h"
 #include "jamutils/M_Map.h"
 
-// note on BufferSize: 65536 elements ~= 1MB stack, increase this if you want; preferring power2 size.
-// market open is ~20k msgs/sec, N=65536 ≈ 3s window. Window grows as traffic slows
+// https://jamisonrobey.github.io/moldudp64-totalview-itch-replay-server/ see last section for justification on size and
+// how you might choose BufferSize if you want to change retransmission window size
 
-template <std::size_t BufferSize = 65336, std::size_t MaxEpollEvents = 1024>
+template <std::size_t BufferSize = 1 << 22, std::size_t MaxEpollEvents = 1024>
 class Server
 {
   public:
@@ -54,7 +54,6 @@ class Server
 
   private:
     std::shared_ptr<jam_utils::M_Map> mapped_file_;
-
     Message_Buffer<BufferSize> msg_buf_{};
     Retransmission_Server<BufferSize, MaxEpollEvents> request_server_;
     std::jthread request_thread_;
