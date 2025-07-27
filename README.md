@@ -84,4 +84,4 @@ OPTIONS:
 ### Sim environment
 When this server and a client are on the same network or machine, you will observe a reliable connection which is not very useful if you're trying to test handling out-of-order or missing packets with your client. You can use the utility [tc](https://man7.org/linux/man-pages/man8/tc.8.html) to introduce packet loss, reordering, latency jitter etc if desired.
 ### Blog post
-There is a short [write up](jamisonrobey.github.io/https://jamisonrobey.github.io/moldudp64-totalview-itch-replay-server/) about the implementation.
+There is a short [write up](https://jamisonrobey.github.io/moldudp64-totalview-itch-replay-server/) about the implementation.
