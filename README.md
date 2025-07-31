@@ -79,7 +79,7 @@ OPTIONS:
   - It only works with TotalView ITCH messages because it relies on the 6-byte timestamp (since midnight) found in each message.
 ### Wireshark
 - A handy tool to inspect the output is the ITCH dissectors for Wireshark by the Open Market Initiative 
-- Below is a capture of the multicast feed decoded in Wireshark using the [Nasdaq_Nsm_Equities_TotalView_Itch_v5_0_Dissector.lua](https://github.com/Open-Markets-Initiative/wireshark-lua/blob/main/Nasdaq/Nasdaq_Nsm_Equities_TotalView_Itch_v5_0_Dissector.lua):
+- Below is a capture of the multicast feed decoded in Wireshark using the [Nasdaq_Nsm_Equities_TotalView_Itch_v5_0_Dissector.lua](https://github.com/Open-Markets-Initiative/wireshark-lua/blob/main/Nasdaq/Nasdaq_NsmEquities_TotalView_Itch_v5_0_Dissector.lua):
 ![img.png](img.png)
 ### Sim environment
 When this server and a client are on the same network or machine, you will observe a reliable connection which is not very useful if you're trying to test handling out-of-order or missing packets with your client. You can use the utility [tc](https://man7.org/linux/man-pages/man8/tc.8.html) to introduce packet loss, reordering, latency jitter etc if desired.
