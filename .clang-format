@@ -1,5 +1,6 @@
 BasedOnStyle: Microsoft
 SortIncludes: Never
+FixNamespaceComments: false
 ColumnLimit: 0
 DerivePointerAlignment: false
 PointerAlignment: Left
@@ -8,3 +9,5 @@ AllowShortLoopsOnASingleLine: true
 BinPackParameters: false
 BinPackArguments: false
 AllowAllParametersOfDeclarationOnNextLine: true
+BreakConstructorInitializers: BeforeColon
+PackConstructorInitializers: Never
