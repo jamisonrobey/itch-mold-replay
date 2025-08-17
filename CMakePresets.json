@@ -15,39 +15,8 @@
       "cacheVariables": {
         "CMAKE_CXX_STANDARD": "23",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
-        "CMAKE_CXX_FLAGS": "-std=c++23 -g3 -O0 -fno-omit-frame-pointer -Wall -Wextra -Wpedantic -Walloca -Wcast-align -Wcast-qual -Wcomma-subscript -Wctor-dtor-privacy -Wdeprecated-copy-dtor -Wdouble-promotion -Wduplicated-branches -Wduplicated-cond -Wenum-conversion -Wextra-semi -Wfloat-equal -Wformat-overflow=2 -Wformat-signedness -Wformat=2 -Wlogical-op -Wmismatched-tags -Wmissing-braces -Wmultichar -Wnoexcept -Wnon-virtual-dtor -Woverloaded-virtual -Wpointer-arith -Wrange-loop-construct -Wrestrict -Wshadow -Wstrict-null-sentinel -Wsuggest-attribute=format -Wsuggest-attribute=malloc -Wuninitialized -Wvla -Wvolatile -Wwrite-strings -Wold-style-cast -Wunused -Wsign-promo -Wmissing-declarations -Wredundant-decls -Winline -Winvalid-pch -Wdisabled-optimization -Winit-self -Wstrict-overflow=5 -Wundef -Wtype-limits -Wmissing-format-attribute -Wunreachable-code -Wstack-protector -Wconversion -Warith-conversion -Wbool-compare -Wbool-operation -Wshift-overflow=2 -Wstringop-overflow=4 -Wtrampolines -Wzero-as-null-pointer-constant -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -fstack-clash-protection -fcf-protection=full -fno-delete-null-pointer-checks -fno-strict-aliasing -fsanitize=address,undefined,leak,pointer-compare,pointer-subtract -fsanitize-address-use-after-scope -fno-sanitize-recover=all -fsanitize-undefined-trap-on-error",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "TRUE"
-      }
-    },
-    {
-      "name": "debug-no-network",
-      "displayName": "Debug (No Network)",
-      "description": "Debug build with network disabled",
-      "inherits": "debug",
-      "binaryDir": "${sourceDir}/build-debug-no-network",
-      "cacheVariables": {
-        "DEBUG_NO_NETWORK": "ON"
-      }
-    },
-    {
-      "name": "debug-no-sleep",
-      "displayName": "Debug (No Sleep)",
-      "description": "Debug build with sleep disabled",
-      "inherits": "debug",
-      "binaryDir": "${sourceDir}/build-debug-no-sleep",
-      "cacheVariables": {
-        "DEBUG_NO_SLEEP": "ON"
-      }
-    },
-    {
-      "name": "debug-no-network-no-sleep",
-      "displayName": "Debug (No Network, No Sleep)",
-      "description": "Debug build with both network and sleep disabled",
-      "inherits": "debug",
-      "binaryDir": "${sourceDir}/build-debug-no-network-no-sleep",
-      "cacheVariables": {
-        "DEBUG_NO_NETWORK": "ON",
-        "DEBUG_NO_SLEEP": "ON"
+        "CMAKE_CXX_FLAGS": "$penv{CMAKE_CXX_FLAGS_EXTRA} -std=c++23 -g3 -O0 -Werror -Wall -Wextra -Wpedantic -Walloca -Wcast-align -Wcast-qual -Wcomma-subscript -Wctor-dtor-privacy -Wdeprecated-copy-dtor -Wdouble-promotion -Wduplicated-branches -Wduplicated-cond -Wenum-conversion -Wextra-semi -Wfloat-equal -Wformat-overflow=2 -Wformat-signedness -Wformat=2 -Wlogical-op -Wmismatched-tags -Wmissing-braces -Wmultichar -Wnoexcept -Wnon-virtual-dtor -Woverloaded-virtual -Wpointer-arith -Wrange-loop-construct -Wrestrict -Wshadow -Wstrict-null-sentinel -Wsuggest-attribute=format -Wsuggest-attribute=malloc -Wuninitialized -Wvla -Wvolatile -Wwrite-strings -Wold-style-cast -Wunused -Wsign-promo -Wmissing-declarations -Wredundant-decls -Winline -Winvalid-pch -Wdisabled-optimization -Winit-self -Wstrict-overflow=5 -Wundef -Wtype-limits -Wmissing-format-attribute -Wunreachable-code -Wstack-protector -Wconversion -Warith-conversion -Wbool-compare -Wbool-operation -Wshift-overflow=2 -Wstringop-overflow=4 -Wtrampolines -Wzero-as-null-pointer-constant -fstack-protector-strong -D_GLIBCXX_ASSERTIONS -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC -fstack-clash-protection -fcf-protection=full -fno-omit-frame-pointer -fno-delete-null-pointer-checks -fno-strict-aliasing -fsanitize=address,undefined,leak,pointer-compare,pointer-subtract -fsanitize-address-use-after-scope -fno-sanitize-recover=all -fsanitize-undefined-trap-on-error",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "On"
       }
     },
     {
@@ -59,38 +28,8 @@
       "cacheVariables": {
         "CMAKE_CXX_STANDARD": "23",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
-        "CMAKE_CXX_FLAGS": "-std=c++23 -DNDEBUG -Wall -Wextra -Wpedantic -Walloca -Wcast-align -Wcast-qual -Wcomma-subscript -Wctor-dtor-privacy -Wdeprecated-copy-dtor -Wdouble-promotion -Wduplicated-branches -Wduplicated-cond -Wenum-conversion -Wextra-semi -Wfloat-equal -Wformat-overflow=2 -Wformat-signedness -Wformat=2 -Wlogical-op -Wmismatched-tags -Wmissing-braces -Wmultichar -Wnoexcept -Wnon-virtual-dtor -Woverloaded-virtual -Wpointer-arith -Wrange-loop-construct -Wrestrict -Wshadow -Wstrict-null-sentinel -Wsuggest-attribute=format -Wsuggest-attribute=malloc -Wuninitialized -Wvla -Wvolatile -Wwrite-strings -Wold-style-cast -Wunused -Wsign-promo -Wmissing-declarations -Wredundant-decls -Winline -Winvalid-pch -Wdisabled-optimization -Winit-self -Wstrict-overflow=5 -Wundef -Wtype-limits -Wmissing-format-attribute -Wunreachable-code -Wconversion -Warith-conversion -Wbool-compare -Wbool-operation -Wshift-overflow=2 -Wstringop-overflow=4 -Wtrampolines -Wzero-as-null-pointer-constant -O3 -flto=auto -fuse-linker-plugin -march=native -mtune=native -fomit-frame-pointer -funroll-loops -fprefetch-loop-arrays -ffast-math -fno-signed-zeros -fno-trapping-math -frename-registers -fweb -fgcse-after-reload -ftree-vectorize"
-      }
-    },
-    {
-      "name": "release-no-network",
-      "displayName": "Release (No Network)",
-      "description": "Release build with network disabled",
-      "inherits": "release",
-      "binaryDir": "${sourceDir}/build-release-no-network",
-      "cacheVariables": {
-        "DEBUG_NO_NETWORK": "ON"
-      }
-    },
-    {
-      "name": "release-no-sleep",
-      "displayName": "Release (No Sleep)",
-      "description": "Release build with sleep disabled",
-      "inherits": "release",
-      "binaryDir": "${sourceDir}/build-release-no-sleep",
-      "cacheVariables": {
-        "DEBUG_NO_SLEEP": "ON"
-      }
-    },
-    {
-      "name": "release-no-network-no-sleep",
-      "displayName": "Release (No Network, No Sleep)",
-      "description": "Release build with both network and sleep disabled",
-      "inherits": "release",
-      "binaryDir": "${sourceDir}/build-release-no-network-no-sleep",
-      "cacheVariables": {
-        "DEBUG_NO_NETWORK": "ON",
-        "DEBUG_NO_SLEEP": "ON"
+        "CMAKE_CXX_FLAGS": "$penv{CMAKE_CXX_FLAGS_EXTRA} -std=c++23 -DNDEBUG -Werror -Wall -Wextra -Wpedantic -Walloca -Wcast-align -Wcast-qual -Wcomma-subscript -Wctor-dtor-privacy -Wdeprecated-copy-dtor -Wdouble-promotion -Wduplicated-branches -Wduplicated-cond -Wenum-conversion -Wextra-semi -Wfloat-equal -Wformat-overflow=2 -Wformat-signedness -Wformat=2 -Wlogical-op -Wmismatched-tags -Wmissing-braces -Wmultichar -Wnoexcept -Wnon-virtual-dtor -Woverloaded-virtual -Wpointer-arith -Wrange-loop-construct -Wrestrict -Wshadow -Wstrict-null-sentinel -Wsuggest-attribute=format -Wsuggest-attribute=malloc -Wuninitialized -Wvla -Wvolatile -Wwrite-strings -Wold-style-cast -Wunused -Wsign-promo -Wmissing-declarations -Wredundant-decls -Winline -Winvalid-pch -Wdisabled-optimization -Winit-self -Wundef -Wtype-limits -Wmissing-format-attribute -Wunreachable-code -Wconversion -Warith-conversion -Wbool-compare -Wbool-operation -Wshift-overflow=2 -Wstringop-overflow=4 -Wtrampolines -Wzero-as-null-pointer-constant -O3 -flto=auto -fuse-linker-plugin -march=native -mtune=native -fomit-frame-pointer -funroll-loops -fprefetch-loop-arrays -ffast-math -fno-signed-zeros -fno-trapping-math -frename-registers -fweb -fgcse-after-reload -ftree-vectorize",
+        "CMAKE_VERBOSE_MAKEFILE": "On"
       }
     }
   ]
