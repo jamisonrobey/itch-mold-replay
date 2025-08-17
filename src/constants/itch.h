@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ITCH_H
+#define ITCH_H
 
 #include <cstdint>
 #include <cstddef>
@@ -25,4 +26,6 @@ inline std::uint64_t extract_timestamp(const std::byte* msg_start)
 }
 
 constexpr std::size_t max_msg_len{50};
-}
+} // namespace itch
+
+#endif

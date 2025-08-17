@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NASDAQ_H
+#define NASDAQ_H
 
 #include <chrono>
 #include <map>
@@ -33,4 +34,6 @@ constexpr std::chrono::nanoseconds market_phase_to_timestamp(const Market_Phase 
 const std::map<std::string, Market_Phase> market_phase_map{{"pre", Market_Phase::pre},
                                                            {"open", Market_Phase::open},
                                                            {"close", Market_Phase::close}};
-}
+} // namespace nasdaq
+
+#endif
