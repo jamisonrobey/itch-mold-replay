@@ -12,7 +12,7 @@
   - If using the `cmake` presets
 ```bash
 git clone https://github.com/jamisonrobey/itch-mold-replay.git --recursive
-cd itch_mold_replay
+cd itch-mold-replay
 cmake --preset release
 cd build-release && ninja
 ```
