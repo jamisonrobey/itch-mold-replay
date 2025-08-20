@@ -1,7 +1,7 @@
 #ifndef RETRANSMISSION_SERVER_H
 #define RETRANSMISSION_SERVER_H
 
-#include "message_bufffer.h"
+#include "message_buffer.h"
 
 #include "jamutils/M_Map.h"
 

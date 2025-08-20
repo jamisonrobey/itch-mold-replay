@@ -30,10 +30,6 @@ Available configure presets:
   "release-no-sleep"            - Release (No Sleep)
   "release-no-network-no-sleep" - Release (No Network, No Sleep)
 ```
-### Replay file
-- You can obtain TotalView-ITCH data from [emi.nasdaq.com/ITCH/](https://emi.nasdaq.com/ITCH/)
-  - You will need to decompress the file if downloaded from here 
-
 ## Usage
 ### Replay file
 - You can obtain TotalView-ITCH data from [emi.nasdaq.com/ITCH/](https://emi.nasdaq.com/ITCH/)
