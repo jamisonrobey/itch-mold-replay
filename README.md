@@ -11,7 +11,7 @@
 - `ninja` 
   - If using the `cmake` presets
 ```bash
-git clone https://github.com/jamisonrobey/itch_mold_replay.git --recursive
+git clone https://github.com/jamisonrobey/itch-mold-replay.git --recursive
 cd itch_mold_replay
 cmake --preset release
 cd build-release && ninja
