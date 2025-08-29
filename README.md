@@ -22,14 +22,19 @@ cmake --list-presets
 Available configure presets:
 
   "debug"                       - Debug
-  "debug-no-network"            - Debug (No Network)
-  "debug-no-sleep"              - Debug (No Sleep)
-  "debug-no-network-no-sleep"   - Debug (No Network, No Sleep)
   "release"                     - Release
-  "release-no-network"          - Release (No Network)
-  "release-no-sleep"            - Release (No Sleep)
-  "release-no-network-no-sleep" - Release (No Network, No Sleep)
 ```
+You can use these presets or call cmake yourself with other flags if needed.
+
+#### Build flags
+
+You can pass some flags to cmake or g++ which are useful for profiling or debugging internals without having to wait for replay timing or network: 
+
+*Listed as how you would pass to cmake*
+  - `-DDEBUG_NO_NETORK=On` 
+    - network send and receive for the server not compiled
+  - `-DDEBUG_NO_SLEEP=On`
+    - calls to sleep not compiled which disables replay simulation
 ## Usage
 ### Replay file
 - You can obtain TotalView-ITCH data from [emi.nasdaq.com/ITCH/](https://emi.nasdaq.com/ITCH/)
