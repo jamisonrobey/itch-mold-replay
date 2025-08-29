@@ -23,7 +23,7 @@ int main(const int argc, char** argv)
                    "MoldUDP64 Session")
         ->required()
         ->check([](const std::string& str) {
-            if (str.length() != mold_udp_64::session_id_len)
+            if (str.length() != mold_udp_64::session_len)
             {
                 return "session must be exactly 10 characters";
             }

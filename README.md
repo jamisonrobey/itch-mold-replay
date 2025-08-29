@@ -28,9 +28,7 @@ You can use these presets or call cmake yourself with other flags if needed.
 
 #### Build flags
 
-You can pass some flags to cmake or g++ which are useful for profiling or debugging internals without having to wait for replay timing or network: 
-
-*Listed as how you would pass to cmake*
+You can pass some flags to cmake / compiler which are useful for profiling or debugging internals without having to wait for replay timing or network: 
   - `-DDEBUG_NO_NETORK=On` 
     - network send and receive for the server not compiled
   - `-DDEBUG_NO_SLEEP=On`

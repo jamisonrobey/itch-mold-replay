@@ -138,8 +138,7 @@ bool Retransmission_Worker::try_parse_request(int client_fd)
         return false;
     }
 
-    const auto file_pos{
-        msg_buffer_.get_file_pos(be64toh(req_ctx_.request.sequence_num))};
+    const auto file_pos{msg_buffer_.get_file_pos(be64toh(req_ctx_.request.sequence_num))};
 
     if (!file_pos)
     {

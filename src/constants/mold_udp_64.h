@@ -18,11 +18,11 @@ constexpr std::size_t mtu_size{1200}; // this is left with a little headroom for
 constexpr std::size_t udp_header_size{28};
 constexpr std::size_t max_payload_size{mtu_size - udp_header_size};
 
-constexpr std::size_t session_id_len{10};
+constexpr std::size_t session_len{10};
 
 struct __attribute__((__packed__)) Downstream_Header
 {
-    std::array<char, session_id_len> session{};
+    std::array<char, session_len> session{};
     std::uint64_t sequence_num{};
     std::uint16_t msg_count{};
 
@@ -30,12 +30,12 @@ struct __attribute__((__packed__)) Downstream_Header
 
     explicit Downstream_Header(std::string_view session_)
     {
-        if (session_.length() != session_id_len)
+        if (session_.length() != session_len)
         {
-            throw std::invalid_argument(std::format("session {} has length {} expected {} ", session_, session_.length(), session_id_len));
+            throw std::invalid_argument(std::format("session {} has length {} expected {} ", session_, session_.length(), session_len));
         }
-        assert(session_.length() == session_id_len);
-        std::memcpy(&session, session_.data(), session_id_len);
+        assert(session_.length() == session_len);
+        std::memcpy(&session, session_.data(), session_len);
     }
 };
 
