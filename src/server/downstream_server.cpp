@@ -4,6 +4,7 @@
 #include "nasdaq.h"
 #include <arpa/inet.h>
 #include <chrono>
+#include <print>
 #include <stdexcept>
 #include <sys/socket.h>
 #include <iostream>
@@ -113,6 +114,12 @@ void Downstream_Server::send_buffer()
     res_ctx_.header.msg_count = htons(res_ctx_.header.msg_count);
     std::memcpy(res_ctx_.buff.data(), &res_ctx_.header, sizeof(mold_udp_64::Downstream_Header));
 #ifndef DEBUG_NO_NETWORK
+#ifdef PROFILE_SEND_EVERY
+    static auto count{0};
+    static auto total_duration{std::chrono::microseconds{0}};
+    constexpr int sample_rate{PROFILE_SEND_EVERY};
+    auto start{std::chrono::high_resolution_clock::now()};
+#endif
     if (const ssize_t bytes_sent{sendto(sock_.fd(),
                                         res_ctx_.buff.data(),
                                         res_ctx_.buff_len,
@@ -125,9 +132,19 @@ void Downstream_Server::send_buffer()
     }
     else if (bytes_sent != static_cast<ssize_t>(res_ctx_.buff_len))
     {
-        // if this is happening try reducing MTU in constants/mold_udp_64.h
         std::println(std::cerr, "sendto sent only {} of {} bytes", bytes_sent, res_ctx_.buff_len);
     }
+#ifdef PROFILE_SEND_EVERY
+    auto end{std::chrono::high_resolution_clock::now()};
+    total_duration += std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    if (++count >= sample_rate)
+    {
+        std::println("PROFILE_SEND avg: {} μs", total_duration.count() / sample_rate);
+        std::cout.flush(); // cbf doing proper logging so pipe to file and sigint when done lol and this flush will handle
+        count = 0;
+        total_duration = std::chrono::microseconds{0};
+    }
+#endif
 #endif
 }
 

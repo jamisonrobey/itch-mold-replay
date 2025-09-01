@@ -20,6 +20,12 @@ if(DEBUG_NO_SLEEP)
     add_compile_definitions(DEBUG_NO_SLEEP)
 endif()
 
+if(PROFILE_SEND_EVERY)
+ add_compile_definitions(PROFILE_SEND_EVERY=${PROFILE_SEND_EVERY})
+endif()
+
+
+
 add_subdirectory(external/jamutils)
 target_include_directories(itch-mold-replay PRIVATE 
                            src/constants

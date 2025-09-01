@@ -33,6 +33,8 @@ You can pass some flags to cmake / compiler which are useful for profiling or de
     - network send and receive for the server not compiled
   - `-DDEBUG_NO_SLEEP=On`
     - calls to sleep not compiled which disables replay simulation
+  - `-DPROFILE_SEND_EVERY=1000`
+    - profile calls to `sendto()` as an average of the value passed.
 ## Usage
 ### Replay file
 - You can obtain TotalView-ITCH data from [emi.nasdaq.com/ITCH/](https://emi.nasdaq.com/ITCH/)
