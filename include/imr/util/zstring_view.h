@@ -9,6 +9,7 @@ namespace imr::util
     class zstring_view
     {
       public:
+        zstring_view() = default;
         constexpr zstring_view(const char* str) noexcept : sv_(str) {}
         zstring_view(const std::string& str) noexcept : sv_(str) {}
 
